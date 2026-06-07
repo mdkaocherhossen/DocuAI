@@ -172,17 +172,7 @@ Include:
 }
 );
 
-const data=await response.json();
-
-result.innerHTML=
-data.candidates[0].content.parts[0].text;
-
-}
-catch(error){
-
 const data = await response.json();
-
-console.log(data);
 
 if(data.candidates){
     result.innerHTML =
@@ -190,6 +180,14 @@ if(data.candidates){
 }else{
     result.innerHTML =
     JSON.stringify(data,null,2);
+}
+
+}catch(error){
+
+result.innerHTML =
+"Error: " + error.message;
+
+}
 };
 
 }
