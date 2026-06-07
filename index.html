@@ -3,124 +3,136 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>DocuMind AI</title>
+<title>DocuMind AI v2</title>
 
 <style>
-
 *{
 margin:0;
 padding:0;
 box-sizing:border-box;
-font-family:Arial,sans-serif;
+font-family:Segoe UI,sans-serif;
 }
 
 body{
-background:#0b1020;
-color:white;
-}
-
-header{
-text-align:center;
-padding:80px 20px;
-background:linear-gradient(135deg,#4f46e5,#06b6d4);
-}
-
-header h1{
-font-size:3rem;
-margin-bottom:10px;
-}
-
-header p{
-font-size:1.1rem;
+background:#0f172a;
+color:#fff;
+min-height:100vh;
 }
 
 .container{
-width:90%;
 max-width:1000px;
 margin:auto;
-padding:30px 0;
+padding:20px;
+}
+
+.header{
+text-align:center;
+padding:50px 20px;
+}
+
+.header h1{
+font-size:3rem;
+background:linear-gradient(90deg,#38bdf8,#8b5cf6);
+-webkit-background-clip:text;
+-webkit-text-fill-color:transparent;
+}
+
+.header p{
+color:#94a3b8;
+margin-top:10px;
 }
 
 .card{
-background:#111827;
+background:#1e293b;
 padding:25px;
-border-radius:15px;
-margin-bottom:20px;
+border-radius:20px;
+box-shadow:0 0 20px rgba(0,0,0,.3);
 }
 
 input{
 width:100%;
 padding:15px;
 border:none;
-border-radius:10px;
+outline:none;
+border-radius:12px;
+background:#334155;
+color:white;
 margin-bottom:15px;
-font-size:16px;
 }
 
 button{
-background:#4f46e5;
-color:white;
+padding:12px 20px;
 border:none;
-padding:15px 25px;
 border-radius:10px;
 cursor:pointer;
-font-size:16px;
+font-weight:bold;
+margin-right:10px;
 }
 
-button:hover{
-opacity:.9;
+.generate{
+background:#8b5cf6;
+color:white;
+}
+
+.copy{
+background:#22c55e;
+color:white;
 }
 
 #result{
 margin-top:20px;
+background:#0f172a;
+padding:20px;
+border-radius:12px;
 white-space:pre-wrap;
-line-height:1.8;
+min-height:150px;
 }
 
-footer{
-text-align:center;
-padding:25px;
-background:#111827;
-margin-top:30px;
+.loader{
+display:none;
+margin-top:15px;
 }
 
 </style>
 </head>
-
 <body>
-
-<header>
-<h1>DocuMind AI</h1>
-<p>Create Documentary Scripts With AI</p>
-</header>
 
 <div class="container">
 
+<div class="header">
+<h1>DocuMind AI</h1>
+<p>Professional Documentary Generator</p>
+</div>
+
 <div class="card">
-
-<h2>Generate Documentary</h2>
-
-<br>
 
 <input
 id="topic"
-type="text"
 placeholder="Example: Toba Supervolcano">
 
-<button onclick="generateAI()">
+<button
+class="generate"
+onclick="generateAI()">
 Generate
 </button>
 
-<div id="result"></div>
+<button
+class="copy"
+onclick="copyResult()">
+Copy
+</button>
 
+<div class="loader" id="loader">
+⏳ Generating...
+</div>
+
+<div id="result">
+Your documentary will appear here...
 </div>
 
 </div>
 
-<footer>
-© 2026 DocuMind AI
-</footer>
+</div>
 
 <script>
 
@@ -132,12 +144,16 @@ document.getElementById("topic").value;
 const result =
 document.getElementById("result");
 
-if(topic===""){
+const loader =
+document.getElementById("loader");
+
+if(!topic){
 alert("Enter a topic");
 return;
 }
 
-result.innerHTML="Generating...";
+loader.style.display="block";
+result.innerHTML="";
 
 const API_KEY="AQ.Ab8RN6IOQpzWtcb582Umf_2_Mz468VbgaDyyKnz8JemQL61quQ";
 
@@ -151,46 +167,57 @@ headers:{
 "Content-Type":"application/json"
 },
 body:JSON.stringify({
-contents:[
-{
-parts:[
-{
-text:
-`Create a professional documentary package about ${topic}.
+contents:[{
+parts:[{
+text:`Create a professional documentary package about ${topic}.
 
 Include:
 1. Documentary Script
 2. SEO Title
 3. YouTube Description
-4. 15 SEO Tags
-5. Thumbnail Text`
-}
-]
-}
-]
+4. Thumbnail Text
+5. 15 Tags`
+}]
+}]
 })
 }
 );
 
-const data = await response.json();
+const data=await response.json();
+
+loader.style.display="none";
 
 if(data.candidates){
-    result.innerHTML =
-    data.candidates[0].content.parts[0].text;
+
+result.innerHTML=
+data.candidates[0].content.parts[0].text;
+
 }else{
-    result.innerHTML =
-    JSON.stringify(data,null,2);
+
+result.innerHTML=
+JSON.stringify(data,null,2);
+
 }
 
 }catch(error){
 
-result.innerHTML =
+loader.style.display="none";
+
+result.innerHTML=
 "Error: " + error.message;
 
 }
-};
 
 }
+
+function copyResult(){
+
+const text =
+document.getElementById("result").innerText;
+
+navigator.clipboard.writeText(text);
+
+alert("Copied!");
 
 }
 
